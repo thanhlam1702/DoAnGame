@@ -18,7 +18,6 @@ const int screenHeight = 650; // chiều cao màn hình
 int radius = 8; //Bán kinh có hình tròn vẽ planeThreat
 int start = 0; //game track
 int gv = 0; //Trang thái hiển trị màn hình nào, như mới vào game, game chạy, thua game, trợ giúp
-int level = 0;
 int score = 0; //Điểm của người chơi
 
 //Để tính frame 
@@ -157,7 +156,6 @@ void firstDesign() {
 
 //------------------------Mở startGame--------------------//
 void startGame() {
-    int beginFrame = getMilliCount();
 
     //MÁY BAY CHÍNH
     //Thân máy bay
@@ -230,23 +228,6 @@ void startGame() {
     glCircle(planeThreat1_x + 36, planeThreat1_y - 25, radius);
     //XỬ LÍ DI CHUYỂN
     planeThreat1_y -= speedThreat;//Hướng di chuyển từ trên xuống và tốc độ của planeThreat
-    //Khi đi đến cuối thì đưa về vị trí mới, cộng đểm và random vi tri moi
-    if (planeThreat1_y < 0) {
-        planeThreat1_y = screenHeight;
-        score += 1;
-        planeThreat1_x = rand() % 928;
-        TangSpeedThreat();
-    }
-    //XỬ LÝ VA CHAM
-    // Cần có 2 điều kiện để 2 máy bay va chạm 
-    // 1: Kiểm tra xem tọa độ x của máy bay chính TRỪ cho tọa độ x của planeThreat mà nhỏ hơn độ dài của planeThreat thì tức là 2 máy bay đang so le với nhau
-    // 2: Nếu Tọa độ y của planeThread CỘNG với độ dài của nó(42)-Nhưng chọn 20 cho hiệu ứng chạm nhìn đẹp- mà NHỎ hơn độ dài của máy bay chính thì 2 máy bay chạm nhau
-    if ((abs(planeMain_x - planeThreat1_x) < 90) && (abs(planeThreat1_y - 20 - planeMain_y) < 40))
-    {
-        health -= 1; //Mất 1 máu
-        planeThreat1_y = screenHeight;
-        planeThreat1_x = rand() % 928;
-    }
     //         ******* HẾT MÁY BAY 1 *********
 
     //         ******* BẮT ĐẦU MÁY BAY 2 *********
@@ -283,23 +264,6 @@ void startGame() {
     glCircle(planeThreat2_x + 36, planeThreat2_y - 25, radius);
     //XỬ LÍ DI CHUYỂN
     planeThreat2_y -= speedThreat;//Hướng di chuyển từ trên xuống và tốc độ của planeThreat
-    //Khi đi đến cuối thì đưa về vị trí mới, cộng đểm và random vi tri moi
-    if (planeThreat2_y < 0) {
-        planeThreat2_y = screenHeight;
-        score += 1;
-        planeThreat2_x = rand() % 928;
-        TangSpeedThreat();
-    }
-    //XỬ LÝ VA CHAM
-    // Cần có 2 điều kiện để 2 máy bay va chạm 
-    // 1: Kiểm tra xem tọa độ x của máy bay chính TRỪ cho tọa độ x của planeThreat mà nhỏ hơn độ dài của planeThreat thì tức là 2 máy bay đang so le với nhau
-    // 2: Nếu Tọa độ y của planeThread CỘNG với độ dài của nó(42)-Nhưng chọn 20 cho hiệu ứng chạm nhìn đẹp- mà NHỎ hơn độ dài của máy bay chính thì 2 máy bay chạm nhau
-    if ((abs(planeMain_x - planeThreat2_x) < 90) && (abs(planeThreat2_y - 20 - planeMain_y) < 40))
-    {
-        health -= 1; //Mất 1 máu
-        planeThreat2_y = screenHeight;
-        planeThreat2_x = rand() % 928;
-    }
     //         ******* HẾT MÁY BAY 2 *********
 
     //         ******* BẮT ĐẦU MÁY BAY 3 *********
@@ -336,6 +300,104 @@ void startGame() {
     glCircle(planeThreat3_x + 36, planeThreat3_y - 25, radius);
     //XỬ LÍ DI CHUYỂN
     planeThreat3_y -= speedThreat;//Hướng di chuyển từ trên xuống và tốc độ của planeThreat
+    
+    //         ******* HẾT MÁY BAY 3 *********
+
+    //VẼ ĐẠN LÊN MÀN HÌNH
+    for (int i = 0; i < bulletList.size(); i++) {
+        bulletList.at(i).Init();
+        bulletList.at(i).handleMove();
+    }
+
+    //HIỂN TRỊ THÔNG SỐ ĐIỂM FPS, MẠNG
+    //Print Score
+    char buffer[50];
+    sprintf(buffer, "SCORE: %d", score);
+    glColor3f(0.000, 1.000, 0.000);
+    renderBitmapString(screenWidth - 100, screenHeight - 20, (void*)font3, buffer);
+    //Speed Print
+    char buffer1[50];
+    sprintf(buffer1, "LEVEL:%d", speedThreat);
+    glColor3f(0.000, 1.000, 0.000);
+    renderBitmapString(screenWidth - 100, screenHeight - 40, (void*)font3, buffer1);
+    //Tính FPS
+    char buffer2[50];
+    strcpy(buffer2, "FPS:");
+    glColor3f(0.000, 1.000, 0.000);
+    renderBitmapString(screenWidth - 100, screenHeight - 60, (void*)font3, buffer2);
+    countFrames();
+    //Lượt chơi của người chơi
+    char buffer3[50];
+    sprintf(buffer3, "HEALTH: %d", health);
+    glColor3f(0.000, 1.000, 0.000);
+    renderBitmapString(screenWidth - 100, screenHeight - 90, (void*)font3, buffer3);
+    
+}
+//------------------------Đóng startGame--------------------//
+
+//------------------------Mở TangSpeedThreat--------------------//
+void TangSpeedThreat(void) {
+    //KHI ĐẠT ĐƯỢC 1 MỐC ĐIỂM TĂNG ĐỘ KHÓ CHO GAME
+    if (score > 0 && score % 13 == 0) {
+        speedThreat += 1;
+    }
+}
+//------------------------Đóng TangSpeedThreat--------------------//
+
+//------------------------Mở display--------------------//
+void render() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    if (start == 1) {
+        glClearColor(0, 0, 0, 0);
+        startGame();
+    }
+    else {
+        firstDesign();
+    }
+    glFlush();
+    glutSwapBuffers();
+}
+//------------------------Đóng display--------------------//
+
+//------------------------Mở update--------------------//
+void update() {
+    //XỬ LÝ CỦA MÁY BAY 1
+    //Khi đi đến cuối thì đưa về vị trí mới, cộng đểm và random vi tri moi
+    if (planeThreat1_y < 0) {
+        planeThreat1_y = screenHeight;
+        score += 1;
+        planeThreat1_x = rand() % 928;
+        TangSpeedThreat();
+    }
+    //XỬ LÝ VA CHAM
+   // Cần có 2 điều kiện để 2 máy bay va chạm 
+   // 1: Kiểm tra xem tọa độ x của máy bay chính TRỪ cho tọa độ x của planeThreat mà nhỏ hơn độ dài của planeThreat thì tức là 2 máy bay đang so le với nhau
+   // 2: Nếu Tọa độ y của planeThread CỘNG với độ dài của nó(42)-Nhưng chọn 20 cho hiệu ứng chạm nhìn đẹp- mà NHỎ hơn độ dài của máy bay chính thì 2 máy bay chạm nhau
+    if ((abs(planeMain_x - planeThreat1_x) < 90) && (abs(planeThreat1_y - 20 - planeMain_y) < 40))
+    {
+        health -= 1; //Mất 1 máu
+        planeThreat1_y = screenHeight;
+        planeThreat1_x = rand() % 928;
+    }
+    //XỬ LÝ CỦA MÁY BAY 2
+    //Khi đi đến cuối thì đưa về vị trí mới, cộng đểm và random vi tri moi
+    if (planeThreat2_y < 0) {
+        planeThreat2_y = screenHeight;
+        score += 1;
+        planeThreat2_x = rand() % 928;
+        TangSpeedThreat();
+    }
+    //XỬ LÝ VA CHAM
+    // Cần có 2 điều kiện để 2 máy bay va chạm 
+    // 1: Kiểm tra xem tọa độ x của máy bay chính TRỪ cho tọa độ x của planeThreat mà nhỏ hơn độ dài của planeThreat thì tức là 2 máy bay đang so le với nhau
+    // 2: Nếu Tọa độ y của planeThread CỘNG với độ dài của nó(42)-Nhưng chọn 20 cho hiệu ứng chạm nhìn đẹp- mà NHỎ hơn độ dài của máy bay chính thì 2 máy bay chạm nhau
+    if ((abs(planeMain_x - planeThreat2_x) < 90) && (abs(planeThreat2_y - 20 - planeMain_y) < 40))
+    {
+        health -= 1; //Mất 1 máu
+        planeThreat2_y = screenHeight;
+        planeThreat2_x = rand() % 928;
+    }
+    //XỬ LÍ CỦA MÁY BAY 3
     //Khi đi đến cuối thì đưa về vị trí mới, cộng đểm và random vi tri moi
     if (planeThreat3_y < 0) {
         planeThreat3_y = screenHeight;
@@ -353,13 +415,11 @@ void startGame() {
         planeThreat3_y = screenHeight;
         planeThreat3_x = rand() % 928;
     }
-    //         ******* HẾT MÁY BAY 3 *********
 
     //MÁY BAY CHÍNH BẮN ĐẠN
     for (int i = 0; i < bulletList.size(); i++) {
         if (bulletList.at(i).is_move) {
-            bulletList.at(i).Init();
-            bulletList.at(i).handleMove();
+            
             if ((abs(planeThreat1_x - bulletList.at(i).x) < 80) && (abs(planeThreat1_y - 20 - bulletList.at(i).y) < 35))
             {
                 bulletList.at(i).is_move = false; //Khi bị va chạm thì đạn biến mất và máy bay sẽ xuất hiện ở vị trí mới
@@ -397,62 +457,15 @@ void startGame() {
         start = 0;
         gv = 1;
     }
-
-    //HIỂN TRỊ THÔNG SỐ ĐIỂM FPS, MẠNG
-    //Print Score
-    char buffer[50];
-    sprintf(buffer, "SCORE: %d", score);
-    glColor3f(0.000, 1.000, 0.000);
-    renderBitmapString(screenWidth - 100, screenHeight - 20, (void*)font3, buffer);
-    //Speed Print
-    char buffer1[50];
-    sprintf(buffer1, "SPEED:%dKm/h", speedThreat);
-    glColor3f(0.000, 1.000, 0.000);
-    renderBitmapString(screenWidth - 100, screenHeight - 40, (void*)font3, buffer1);
-    //Tính FPS
-    char buffer2[50];
-    strcpy(buffer2, "FPS:");
-    glColor3f(0.000, 1.000, 0.000);
-    renderBitmapString(screenWidth - 100, screenHeight - 60, (void*)font3, buffer2);
-    countFrames();
-    //Lượt chơi của người chơi
-    char buffer3[50];
-    sprintf(buffer3, "HEALTH: %d", health);
-    glColor3f(0.000, 1.000, 0.000);
-    renderBitmapString(screenWidth - 100, screenHeight - 90, (void*)font3, buffer3);
-
+    int beginFrame = getMilliCount();
     glutPostRedisplay();
     int timeDiff = getMilliCount() - beginFrame;
     if (timeDiff < 1000 / FPS)
     {
-        sleep(1000 /FPS - timeDiff);
+        sleep(1000 / FPS - timeDiff);
     }
 }
-//------------------------Đóng startGame--------------------//
-
-//------------------------Mở TangSpeedThreat--------------------//
-void TangSpeedThreat(void) {
-    //KHI ĐẠT ĐƯỢC 1 MỐC ĐIỂM TĂNG ĐỘ KHÓ CHO GAME
-    if (score > 0 && score % 13 == 0) {
-        speedThreat += 1;
-    }
-}
-//------------------------Đóng TangSpeedThreat--------------------//
-
-//------------------------Mở display--------------------//
-void display() {
-    glClear(GL_COLOR_BUFFER_BIT);
-    if (start == 1) {
-        glClearColor(0, 0, 0, 0);
-        startGame();
-    }
-    else {
-        firstDesign();
-    }
-    glFlush();
-    glutSwapBuffers();
-}
-//------------------------Đóng display--------------------//
+//------------------------Đóng update--------------------//
 
 //------------------------Mở keyboardFunc--------------------//
 //Hàm xử lí nhấn bàn phím
@@ -579,11 +592,13 @@ int main(int argc, char* argv[])
     glutInitWindowPosition(200, 20); //Vị trí xuất hiện của màn hình
     glutCreateWindow("Game May Bay");
 
-    glutDisplayFunc(display);
+    glutDisplayFunc(render);
+    //inputProcess
     glutKeyboardFunc(keyboardFunc);
     glutMouseFunc(mouseFunc);
     glutReshapeFunc(reshape);
     glutTimerFunc(1000, timer, 0);
+    glutIdleFunc(update);
     glutMainLoop();
     return 0;
 }
