@@ -25,6 +25,7 @@ int score = 0; //Điểm của người chơi
 int cframe = 0;
 int time = 0;
 int timebase = 0;
+int FPS = 100;
 
 //Tọa độ của plain main
 int planeMain_x = (screenWidth / 2) - (94 / 2);;//vị trí bên trái theo trục x 
@@ -422,9 +423,9 @@ void startGame() {
 
     glutPostRedisplay();
     int timeDiff = getMilliCount() - beginFrame;
-    if (timeDiff < 10)
+    if (timeDiff < 1000 / FPS)
     {
-        sleep(10 - timeDiff);
+        sleep(1000 /FPS - timeDiff);
     }
 }
 //------------------------Đóng startGame--------------------//
