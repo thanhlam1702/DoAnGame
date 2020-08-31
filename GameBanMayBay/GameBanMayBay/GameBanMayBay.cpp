@@ -12,7 +12,7 @@
 
 #define STEPS 40
 #define PI 3.14
-#define numPlaneThreat 10 //Số lượng máy bay trở ngại
+#define numPlaneThreat 3 //Số lượng máy bay trở ngại
 const int screenWidth = 1200; //chiều dài màn hình
 const int screenHeight = 650; // chiều cao màn hình
 
@@ -22,10 +22,11 @@ int gv = 0; //Trang thái hiển trị màn hình nào, như mới vào game, ga
 int score = 0; //Điểm của người chơi
 
 //Để tính frame 
-int cframe = 0;
+int frameCount = 0;
 int time = 0;
 int timebase = 0;
-int FPS = 100;
+int maxFps = 60;
+float fps;
 
 //Tọa độ của plain main
 int planeMain_x = (screenWidth / 2) - (94 / 2);;//vị trí bên trái theo trục x 
@@ -244,11 +245,11 @@ void startGame() {
     glColor3f(0.000, 1.000, 0.000);
     renderBitmapString(screenWidth - 100, screenHeight - 40, (void*)font3, buffer1);
     //Tính FPS
+    countFrames();
     char buffer2[50];
-    strcpy(buffer2, "FPS:");
+    sprintf(buffer2, "FPS:%f", fps);
     glColor3f(0.000, 1.000, 0.000);
     renderBitmapString(screenWidth - 100, screenHeight - 60, (void*)font3, buffer2);
-    countFrames();
     //Lượt chơi của người chơi
     char buffer3[50];
     sprintf(buffer3, "HEALTH: %d", health);
@@ -295,16 +296,16 @@ void render() {
 //------------------------Mở update--------------------//
 void update() {
     //XỬ LÝ CỦA MÁY BAY VỚI CÁC PLANETHREAT
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < numPlaneThreat; i++) {
         if (i % 4 == 0 && planeThreat_y[i] < (screenHeight / 2)) {
-            int temp = rand() % 2;
+            /*int temp = rand() % 2;
             if (temp == 0) {
                 planeThreat_x[i] += 50;
             }
             else
             {
                 planeThreat_x[i] -= 50;
-            }
+            }*/
         }
         //Khi đi đến cuối thì đưa về vị trí mới, cộng đểm và random vi tri moi
         if (planeThreat_y[i] < 0) {
@@ -353,9 +354,11 @@ void update() {
     int beginFrame = getMilliCount();
     glutPostRedisplay();
     int timeDiff = getMilliCount() - beginFrame;
-    if (timeDiff < 1000 / FPS)
+    int countK = 0;
+    countK++;
+    if (timeDiff < 1000 / maxFps)
     {
-        sleep(1000 / FPS - timeDiff);
+        sleep(1000 / maxFps - timeDiff);
     }
 }
 //------------------------Đóng update--------------------//
@@ -439,17 +442,12 @@ void mouseFunc(int button, int state, int x, int y) {
 
 //------------------------Mở countFrames--------------------//
 void countFrames(void) {
-    //FPS nay can sua lai theo thay
     time = glutGet(GLUT_ELAPSED_TIME);
-    cframe++;
+    frameCount++;
     if (time - timebase > 50) {
-        float fps = cframe * 1000.0 / (time - timebase);
-        char buffer2[50];
-        sprintf(buffer2, "%f", fps);
-        glColor3f(0.000, 1.000, 0.000);
-        renderBitmapString(screenWidth - 60, screenHeight - 60, (void*)font3, buffer2);
+        fps = frameCount / ((time - timebase) / 1000.0);
         timebase = time;
-        cframe = 0;
+        frameCount = 0;
     }
 }
 //------------------------Đóng countFrames--------------------//
