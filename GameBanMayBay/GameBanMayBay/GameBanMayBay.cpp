@@ -9,9 +9,14 @@
 #include <vector>
 #include <sys/timeb.h>
 #include <sys/utime.h>
+#include <ctime>
 
 #define STEPS 40
 #define PI 3.14
+<<<<<<< Updated upstream
+=======
+#define numPlaneThreat 5 //Số lượng máy bay trở ngại
+>>>>>>> Stashed changes
 const int screenWidth = 1200; //chiều dài màn hình
 const int screenHeight = 650; // chiều cao màn hình
 
@@ -22,8 +27,13 @@ int level = 0;
 int score = 0; //Điểm của người chơi
 
 //Để tính frame 
+<<<<<<< Updated upstream
 int cframe = 0;
 int time = 0;
+=======
+int frameCount = 0;
+int time1 = 0;
+>>>>>>> Stashed changes
 int timebase = 0;
 int FPS = 100;
 
@@ -196,6 +206,7 @@ void startGame() {
     glEnd();
 
     //CÁC MÁY BAY TRỞ NGẠI - PLANETHREAT
+<<<<<<< Updated upstream
     //         ******* BẮT ĐẦU MÁY BAY 1 *********
     //Cạnh Trái Trên
     glBegin(GL_TRIANGLES);
@@ -352,6 +363,42 @@ void startGame() {
         health -= 1; //Mất 1 máu
         planeThreat3_y = screenHeight;
         planeThreat3_x = rand() % 928;
+=======
+    for (int i = 0; i < numPlaneThreat; i++) {
+        glBegin(GL_TRIANGLES);
+        glColor3f(1, 0, 0);
+        glVertex2f(planeThreat_x[i] + 36, planeThreat_y[i] - 20);
+        glVertex2f(planeThreat_x[i] + 36, planeThreat_y[i] - 48);
+        glVertex2f(planeThreat_x[i], planeThreat_y[i]);
+        glEnd();
+        //Cánh Phải Trên
+        glBegin(GL_TRIANGLES);
+        glColor3f(1, 0, 0);
+        glVertex2f(planeThreat_x[i] + 36, planeThreat_y[i] - 20);
+        glVertex2f(planeThreat_x[i] + 36, planeThreat_y[i] - 48);
+        glVertex2f(planeThreat_x[i] + 72, planeThreat_y[i]);
+        glEnd();
+        //Cánh Trái Dưới
+        glBegin(GL_TRIANGLES);
+        glColor3f(1, 0, 0);
+        glVertex2f(planeThreat_x[i] + 36, planeThreat_y[i] - 20);
+        glVertex2f(planeThreat_x[i] + 36, planeThreat_y[i]);
+        glVertex2f(planeThreat_x[i], planeThreat_y[i] - 40);
+        glEnd();
+        //Cánh Phải Dưới
+        glBegin(GL_TRIANGLES);
+        glColor3f(1, 0, 0);
+        glVertex2f(planeThreat_x[i] + 36, planeThreat_y[i] - 25);
+        glVertex2f(planeThreat_x[i] + 36, planeThreat_y[i]);
+        glVertex2f(planeThreat_x[i] + 72, planeThreat_y[i] - 40);
+        glEnd();
+        //Thân Tròn
+        glColor3f(0.000, 0.000, 0.000);
+        glCircle(planeThreat_x[i] + 36, planeThreat_y[i] - 25, radius);
+        //XỬ LÍ DI CHUYỂN
+        planeThreat_y[i] -= speedThreat;
+        srand(time(0));//Hướng di chuyển từ trên xuống và tốc độ của planeThreat
+>>>>>>> Stashed changes
     }
     //         ******* HẾT MÁY BAY 3 *********
 
@@ -411,7 +458,11 @@ void startGame() {
     renderBitmapString(screenWidth - 100, screenHeight - 40, (void*)font3, buffer1);
     //Tính FPS
     char buffer2[50];
+<<<<<<< Updated upstream
     strcpy(buffer2, "FPS:");
+=======
+    sprintf(buffer2, "FPS: %.f", fps);
+>>>>>>> Stashed changes
     glColor3f(0.000, 1.000, 0.000);
     renderBitmapString(screenWidth - 100, screenHeight - 60, (void*)font3, buffer2);
     countFrames();
@@ -454,6 +505,77 @@ void display() {
 }
 //------------------------Đóng display--------------------//
 
+<<<<<<< Updated upstream
+=======
+//------------------------Mở update--------------------//
+void update() {
+    //XỬ LÝ CỦA MÁY BAY VỚI CÁC PLANETHREAT
+    for (int i = 0; i < numPlaneThreat; i++) {
+       
+        if (planeThreat_y[i] < screenHeight) {
+            int temp = rand() % 2;
+            int rd = rand() % 100;
+            if (temp == 0) {
+            planeThreat_x[i] = rand() % (900 - 10 +10) -10 +rd*i ;
+            }
+        }
+        //Khi đi đến cuối thì đưa về vị trí mới, cộng đểm và random vi tri moi
+        if (planeThreat_y[i] < 0) {
+            planeThreat_y[i] = screenHeight;
+            score += 1;
+            planeThreat_x[i] = rand() % 928;
+            TangSpeedThreat();
+        }
+        //XỬ LÝ VA CHAM
+       // Cần có 2 điều kiện để 2 máy bay va chạm 
+       // 1: Kiểm tra xem tọa độ x của máy bay chính TRỪ cho tọa độ x của planeThreat mà nhỏ hơn độ dài của planeThreat thì tức là 2 máy bay đang so le với nhau
+       // 2: Nếu Tọa độ y của planeThread CỘNG với độ dài của nó(42)-Nhưng chọn 20 cho hiệu ứng chạm nhìn đẹp- mà NHỎ hơn độ dài của máy bay chính thì 2 máy bay chạm nhau
+        if ((abs(planeMain_x - planeThreat_x[i]) < 90) && (abs(planeThreat_y[i] - 20 - planeMain_y) < 40))
+        {
+            health -= 1; //Mất 1 máu
+            planeThreat_y[i] = screenHeight + 140;
+            planeThreat_x[i] = rand() % 928;
+        }
+    }
+
+    //MÁY BAY CHÍNH BẮN ĐẠN
+    for (int j = 0; j < bulletList.size(); j++) {
+        if (bulletList.at(j).is_move) {
+            for (int i = 0; i < numPlaneThreat; i++) {
+                if ((abs(planeThreat_x[i] - bulletList.at(j).x) < 80) && (abs(planeThreat_y[i] - 20 - bulletList.at(j).y) < 35))
+                {
+                    bulletList.at(j).is_move = false; //Khi bị va chạm thì đạn biến mất và máy bay sẽ xuất hiện ở vị trí mới
+                    planeThreat_y[i] = screenHeight + 140;
+                    planeThreat_x[i] = rand() % 928;
+                    score += 1;
+                    TangSpeedThreat();
+                    bulletList.erase(bulletList.begin() + j);
+                    return;
+                }
+            }
+        }
+        else {
+            bulletList.erase(bulletList.begin() + j); //Nếu đạn đi quá màn hình thì xóa đạn
+        }
+    }
+    //HẾT MẠNG THÌ DỪNG GAME
+    if (health < 1) {
+        start = 0;
+        gv = 1;
+    }
+    int beginFrame = getMilliCount();
+    glutPostRedisplay();
+    int timeDiff = getMilliCount() - beginFrame;
+    int countK = 0;
+    countK++;
+    if (timeDiff < 1000 / maxFps)
+    {
+        sleep(1000 / maxFps - timeDiff);
+    }
+}
+//------------------------Đóng update--------------------//
+
+>>>>>>> Stashed changes
 //------------------------Mở keyboardFunc--------------------//
 //Hàm xử lí nhấn bàn phím
 void keyboardFunc(unsigned char key, int x, int y) {
@@ -537,6 +659,7 @@ void mouseFunc(int button, int state, int x, int y) {
 
 //------------------------Mở countFrames--------------------//
 void countFrames(void) {
+<<<<<<< Updated upstream
     //FPS nay can sua lai theo thay
     time = glutGet(GLUT_ELAPSED_TIME);
     cframe++;
@@ -548,6 +671,14 @@ void countFrames(void) {
         renderBitmapString(screenWidth - 60, screenHeight - 60, (void*)font3, buffer2);
         timebase = time;
         cframe = 0;
+=======
+    time1 = glutGet(GLUT_ELAPSED_TIME);
+    frameCount++;
+    if (time1 - timebase > 50) {
+        fps = frameCount / ((time1 - timebase) / 1000.0);
+        timebase = time1;
+        frameCount = 0;
+>>>>>>> Stashed changes
     }
 }
 //------------------------Đóng countFrames--------------------//

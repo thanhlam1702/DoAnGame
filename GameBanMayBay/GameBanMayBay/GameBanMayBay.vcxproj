@@ -92,7 +92,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\Hoc Dai Hoc\Do Hoa May Tinh\DoAnGame\GameBanMayBay\GameBanMayBay\Dependencies\glew;E:\Hoc Dai Hoc\Do Hoa May Tinh\DoAnGame\GameBanMayBay\GameBanMayBay\Dependencies\freeglut;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\npcv\source\Repos\DoAnGame2\GameBanMayBay\GameBanMayBay\Dependencies\freeglut;C:\Users\npcv\source\Repos\DoAnGame2\GameBanMayBay\GameBanMayBay\Dependencies\glew;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32.lib;freeglut.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
