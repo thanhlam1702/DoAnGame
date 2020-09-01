@@ -12,7 +12,6 @@
 
 #define STEPS 40
 #define PI 3.14
-#define numPlaneThreat 3 //Số lượng máy bay trở ngại
 const int screenWidth = 1200; //chiều dài màn hình
 const int screenHeight = 650; // chiều cao màn hình
 
@@ -33,6 +32,7 @@ int planeMain_x = (screenWidth / 2) - (94 / 2);;//vị trí bên trái theo tr�
 int planeMain_y = 0; //vị trí từ dưới lên theo y
 const int speedPlane = 20; // tốc độ di chuyển của máy bay
 int health = 3;
+int k = 1;
 
 //Tọa độ viên đạn và trạng thái viên đạn
 int shootX = 0;
@@ -62,9 +62,13 @@ struct bullet {
 std::vector<bullet> bulletList; //Danh sách chứa đạn bắn ra
 
 //Tọa độ của các plane threat
-int planeThreat_x[numPlaneThreat]; //danh sách tọa độ x của các máy bay
-int planeThreat_y[numPlaneThreat];//danh sách tọa độ y của các máy bay
+int numPlaneThreat = 10; //Số lượng máy bay trở ngại
+int* planeThreat_x= new int[numPlaneThreat]; //danh sách tọa độ x của các máy bay
+int* planeThreat_y = new int[numPlaneThreat];//danh sách tọa độ y của các máy bay
 int speedThreat = 1; //Tốc độ của planeThreat
+double red[10];
+double blue[10];
+double green[10];
 
 //Font chữ
 const int font1 = (int)GLUT_BITMAP_TIMES_ROMAN_24;
@@ -194,35 +198,35 @@ void startGame() {
     //CÁC MÁY BAY TRỞ NGẠI - PLANETHREAT
     for (int i = 0; i < numPlaneThreat; i++) {
         glBegin(GL_TRIANGLES);
-        glColor3f(1, 0, 0);
-        glVertex2f(planeThreat_x[i] + 36, planeThreat_y[i] - 20);
-        glVertex2f(planeThreat_x[i] + 36, planeThreat_y[i] - 48);
+        glColor3f(red[i], green[i], blue[i]);
+        glVertex2f(planeThreat_x[i] + 36 * k, planeThreat_y[i] - 20 * k);
+        glVertex2f(planeThreat_x[i] + 36 * k, planeThreat_y[i] - 48 * k);
         glVertex2f(planeThreat_x[i], planeThreat_y[i]);
         glEnd();
         //Cánh Phải Trên
         glBegin(GL_TRIANGLES);
-        glColor3f(1, 0, 0);
-        glVertex2f(planeThreat_x[i] + 36, planeThreat_y[i] - 20);
-        glVertex2f(planeThreat_x[i] + 36, planeThreat_y[i] - 48);
-        glVertex2f(planeThreat_x[i] + 72, planeThreat_y[i]);
+        glColor3f(red[i], green[i], blue[i]);
+        glVertex2f(planeThreat_x[i] + 36 * k, planeThreat_y[i] - 20 * k);
+        glVertex2f(planeThreat_x[i] + 36 * k, planeThreat_y[i] - 48 * k);
+        glVertex2f(planeThreat_x[i] + 72 * k, planeThreat_y[i]);
         glEnd();
         //Cánh Trái Dưới
         glBegin(GL_TRIANGLES);
-        glColor3f(1, 0, 0);
-        glVertex2f(planeThreat_x[i] + 36, planeThreat_y[i] - 20);
-        glVertex2f(planeThreat_x[i] + 36, planeThreat_y[i]);
-        glVertex2f(planeThreat_x[i], planeThreat_y[i] - 40);
+        glColor3f(red[i], green[i], blue[i]);
+        glVertex2f(planeThreat_x[i] + 36 * k, planeThreat_y[i] - 20 * k);
+        glVertex2f(planeThreat_x[i] + 36 * k, planeThreat_y[i]);
+        glVertex2f(planeThreat_x[i], planeThreat_y[i] - 40 * k);
         glEnd();
         //Cánh Phải Dưới
         glBegin(GL_TRIANGLES);
-        glColor3f(1, 0, 0);
-        glVertex2f(planeThreat_x[i] + 36, planeThreat_y[i] - 25);
-        glVertex2f(planeThreat_x[i] + 36, planeThreat_y[i]);
-        glVertex2f(planeThreat_x[i] + 72, planeThreat_y[i] - 40);
+        glColor3f(red[i], green[i], blue[i]);
+        glVertex2f(planeThreat_x[i] + 36 * k, planeThreat_y[i] - 25 * k);
+        glVertex2f(planeThreat_x[i] + 36 * k, planeThreat_y[i]);
+        glVertex2f(planeThreat_x[i] + 72 * k, planeThreat_y[i] - 40 * k);
         glEnd();
         //Thân Tròn
         glColor3f(0.000, 0.000, 0.000);
-        glCircle(planeThreat_x[i] + 36, planeThreat_y[i] - 25, radius);
+        glCircle(planeThreat_x[i] + 36 * k, planeThreat_y[i] - 25 * k, radius * k);
         //XỬ LÍ DI CHUYỂN
         planeThreat_y[i] -= speedThreat;//Hướng di chuyển từ trên xuống và tốc độ của planeThreat
     }
@@ -255,6 +259,11 @@ void startGame() {
     sprintf(buffer3, "HEALTH: %d", health);
     glColor3f(0.000, 1.000, 0.000);
     renderBitmapString(screenWidth - 100, screenHeight - 90, (void*)font3, buffer3);
+    //so luon may bay
+    char buffer4[50];
+    sprintf(buffer4, "Num: %d", numPlaneThreat);
+    glColor3f(0.000, 1.000, 0.000);
+    renderBitmapString(screenWidth - 100, screenHeight - 120, (void*)font3, buffer4);
     
 }
 //------------------------Đóng startGame--------------------//
@@ -264,7 +273,9 @@ void setPositionPlaneThreat() { //Khởi tạo vị trí ngẫu nhiên cho các 
     for (int i = 0; i < numPlaneThreat; i++) {
         planeThreat_x[i] = rand() % 928;
         planeThreat_y[i] = screenHeight + (i * 140);
-
+        red[i] = (rand() % 11) * 1.0 / 10;
+        green[i] = (rand() % 11) * 1.0 / 10;
+        blue[i] = (rand() % 11) * 1.0 / 10;
     }
 }
 //------------------------Đóng setPositionPlaneThreat--------------------//
@@ -297,15 +308,15 @@ void render() {
 void update() {
     //XỬ LÝ CỦA MÁY BAY VỚI CÁC PLANETHREAT
     for (int i = 0; i < numPlaneThreat; i++) {
-        if (i % 4 == 0 && planeThreat_y[i] < (screenHeight / 2)) {
-            /*int temp = rand() % 2;
+        if (i % 3 == 0 && planeThreat_y[i] < (screenHeight * 2 / 3 )) {
+            int temp = rand() % 2;
             if (temp == 0) {
-                planeThreat_x[i] += 50;
+                planeThreat_x[i] += 4;
             }
             else
             {
-                planeThreat_x[i] -= 50;
-            }*/
+                planeThreat_x[i] -= 4;
+            }
         }
         //Khi đi đến cuối thì đưa về vị trí mới, cộng đểm và random vi tri moi
         if (planeThreat_y[i] < 0) {
@@ -318,7 +329,7 @@ void update() {
        // Cần có 2 điều kiện để 2 máy bay va chạm 
        // 1: Kiểm tra xem tọa độ x của máy bay chính TRỪ cho tọa độ x của planeThreat mà nhỏ hơn độ dài của planeThreat thì tức là 2 máy bay đang so le với nhau
        // 2: Nếu Tọa độ y của planeThread CỘNG với độ dài của nó(42)-Nhưng chọn 20 cho hiệu ứng chạm nhìn đẹp- mà NHỎ hơn độ dài của máy bay chính thì 2 máy bay chạm nhau
-        if ((abs(planeMain_x - planeThreat_x[i]) < 90) && (abs(planeThreat_y[i] - 20 - planeMain_y) < 40))
+        if ((abs(planeMain_x - planeThreat_x[i]) < 90*k) && (abs(planeThreat_y[i] - 20*k - planeMain_y) < 40*k))
         {
             health -= 1; //Mất 1 máu
             planeThreat_y[i] = screenHeight + 140;
@@ -330,7 +341,7 @@ void update() {
     for (int j = 0; j < bulletList.size(); j++) {
         if (bulletList.at(j).is_move) {
             for (int i = 0; i < numPlaneThreat; i++) {
-                if ((abs(planeThreat_x[i] - bulletList.at(j).x) < 80) && (abs(planeThreat_y[i] - 20 - bulletList.at(j).y) < 35))
+                if ((abs(planeThreat_x[i] - bulletList.at(j).x) < 80*k) && (abs(planeThreat_y[i] - 20*k - bulletList.at(j).y) < 35*k))
                 {
                     bulletList.at(j).is_move = false; //Khi bị va chạm thì đạn biến mất và máy bay sẽ xuất hiện ở vị trí mới
                     planeThreat_y[i] = screenHeight + 140;
@@ -422,6 +433,12 @@ void keyboardFunc(unsigned char key, int x, int y) {
             }
         }
     }
+    if ('9' == key) {
+        numPlaneThreat += 1;
+    }
+    if ('0' == key) {
+        numPlaneThreat -= 1;
+    }
 }
 //------------------------Đóng keyboardFunc--------------------//
 
@@ -464,8 +481,11 @@ void reshape(int w, int h)
 {
     glViewport(0, 0, (GLsizei)w, (GLsizei)h);
     glMatrixMode(GL_PROJECTION);
+
     glLoadIdentity();
+
     gluOrtho2D(0.0, (GLdouble)w, 0.0, (GLdouble)h);
+    glMatrixMode(GL_MODELVIEW);
 }
 //------------------------Đóng reshape--------------------//
 
@@ -476,13 +496,13 @@ int main(int argc, char* argv[])
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
     glutInitWindowSize(screenWidth, screenHeight); //Chiều cao và rộng của màn hình
-    glutInitWindowPosition(200, 20); //Vị trí xuất hiện của màn hình
+    glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH)-screenWidth)/2, (glutGet(GLUT_SCREEN_HEIGHT) - screenHeight) / 2); //Vị trí xuất hiện của màn hình
     glutCreateWindow("Game May Bay");
     glutDisplayFunc(render);
     //inputProcess
     glutKeyboardFunc(keyboardFunc);
     glutMouseFunc(mouseFunc);
-    glutReshapeFunc(reshape);
+    reshape(screenWidth,screenHeight);
     glutTimerFunc(1000, timer, 0);
     glutIdleFunc(update);
     glutMainLoop();
